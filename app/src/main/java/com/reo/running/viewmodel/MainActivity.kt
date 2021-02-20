@@ -4,27 +4,33 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.reo.running.viewmodel.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        // インスタンスを作成
+        var counterA = 0
         val viewModel: CountViewModel = ViewModelProviders.of(this).get(CountViewModel::class.java)
 
-        val text1 = findViewById(R.id.text1) as TextView
-        val text2 = findViewById(R.id.text2) as TextView
+        val text1 = findViewById<TextView>(R.id.text1)
+        val text2 = findViewById<TextView>(R.id.text2)
 
-        val button = findViewById(R.id.button) as Button
+        val button = findViewById<Button>(R.id.button)
         button.setOnClickListener {
 
-            viewModel.counterA++
-            viewModel.counterB++
+            counterA++
+            text1.setText(counterA.toString())
 
-            text1.setText(viewModel.counterA.toString())
-            text2.setText(viewModel.counterB.toString())
+            viewModel.counterB.value = viewModel.counterB.value!! + 1
         }
+
+        val countObserver = Observer<Int> { counter ->
+            text2.text = counter.toString()
+        }
+
+        viewModel.counterB.observe(this,countObserver)
     }
 }
